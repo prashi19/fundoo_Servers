@@ -1,0 +1,21 @@
+{
+    "registration":{
+        "firstName": "prashann",
+        "lastName": "s",
+        "Email": "prashann@gmail.com",
+        "Password":"1234568" 
+    },
+
+    "login":{
+        "Email":"prashann@gmail.com",
+        "Password":"1234568"
+    },
+    "forgot":{
+        "Email":"prashann@gmail.com"
+    },
+    "reset":{
+        "Password":"2345678",
+        "headers":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7fSwiaWF0IjoxNTUyMTE2NzAzLCJleHAiOjE1NTIyMDMxMDN9.nbRi05J_2mXcfUOYinoyyv_KtQBhAs-wL2JXzLItOfU"
+        
+    }
+}
