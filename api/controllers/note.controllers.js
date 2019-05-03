@@ -33,10 +33,11 @@ exports.createNote = (req, res) => {
           responseResult.error = err;
           res.status(500).send(responseResult);
         } else {
+
           var userNote = {};
           responseResult.status = true;
           responseResult.message = "card saved..";
-          responseResult.data = userNote;
+          responseResult.data = result;
 
           res.status(200).send(responseResult);
         }
@@ -143,6 +144,36 @@ exports.reminder = (req, res) => {
     res.send(error);
   }
 };
+
+exports.isPinned = (req, res) => {
+  try {
+      req.checkBody('noteID', 'noteID required').not().isEmpty();
+      var errors = req.validationErrors();
+      var response = {};
+      if (errors) {
+          response.status = false;
+          response.error = errors;
+          return res.status(422).send(response);
+      } else {
+          var responseResult = {};
+          noteID = req.body.noteID;
+          pinned = req.body.pinned;
+          noteService.isPinned(noteID, pinned, (err, result) => {
+              if (err) {
+                  responseResult.status = false;
+                  responseResult.error = err;
+                  res.status(500).send(responseResult);
+              } else {
+                  responseResult.status = true;
+                  responseResult.data = result;
+                  res.status(200).send(responseResult);
+              }
+          })
+      }
+  } catch (error) {
+      res.send(error)
+  }
+}
 
 exports.isArchived = (req, res) => {
   try {
@@ -430,6 +461,8 @@ exports.getLabels = (req, res) => {
         } else {
           responseResult.status = true;
           responseResult.data = result;
+          console.log("response result in NOTE CONTROLLER---->",responseResult);
+          
           res.status(200).send(responseResult);
         }
       });
@@ -496,6 +529,7 @@ exports.updateLabel = (req, res) => {
         labelID: req.body.labelID
       };
       noteService.updateLabel(labelData, (err, result) => {
+        console.log("labelDAta",labelData);     
         if (err) {
           responseResult.status = false;
           responseResult.error = err;
@@ -511,3 +545,69 @@ exports.updateLabel = (req, res) => {
     res.send(error);
   }
 };
+
+
+exports.saveLabelToNote = (req, res) => {
+  try {
+      req.checkBody('noteID', 'noteID required').not().isEmpty();
+      var errors = req.validationErrors();
+      var response = {};
+      if (errors) {
+          response.status = false;
+          response.error = errors;
+          return res.status(422).send(response);
+      } else {
+          var responseResult = {};
+          noteID = req.body.noteID;
+          noteService.saveLabelToNote(req.body, (err, result) => {
+              if (err) {
+                  responseResult.status = false;
+                  responseResult.error = err;
+                  res.status(500).send(responseResult);
+              } else {
+                  responseResult.status = true;
+                  responseResult.data = result;
+                  res.status(200).send(responseResult);
+              }
+          })
+      }
+  } catch (error) {
+      res.send(error)
+  }
+}
+
+
+exports.deleteLabelToNote = (req, res) => {
+  try {
+      console.log("hbgksbkb",req.body);
+      
+      req.checkBody('noteID', 'noteID required').not().isEmpty();
+      var errors = req.validationErrors();
+      var response = {};
+      if (errors) {
+        console.log("err in controller");
+        
+          response.status = false;
+          response.error = errors;
+          return res.status(422).send(response);
+      } else {
+          var responseResult = {};
+          
+          noteID = req.body.noteID;
+          noteService.deleteLabelToNote(req.body, (err, result) => {
+              if (err) {
+                  responseResult.status = false;
+                  responseResult.error = err;
+                  res.status(500).send(responseResult);
+              } else {
+                  responseResult.status = true;
+                  responseResult.data = result;
+                  console.log(responseResult);         
+                  res.status(200).send(responseResult);
+              }
+          })
+      }
+  } catch (error) {
+      res.send(error)
+  }
+}

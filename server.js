@@ -55,10 +55,8 @@ const server = app.listen(4000, () => {
 });
 
 var schedular=require("node-schedule");
-var j=schedular.scheduleJob("*/1 * * * *",function(){
-  noteServices.checkReminders();
-  console.log("note service in server.js");
-  
+var j=schedular.scheduleJob("*/1 * * * * ",function(){
+  noteServices.checkReminders();  
 });
 
 

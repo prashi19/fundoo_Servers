@@ -8,7 +8,6 @@ databaseURL: "https://fundoo-a3688.firebaseio.com"
 module.exports = {
 SendPushNotify(token,title,body) {
 var registrationToken = token;
-
 var payload = {
 notification: {
 title: title,

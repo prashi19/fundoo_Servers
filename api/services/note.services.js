@@ -61,6 +61,17 @@ exports.reminder = (paramID, paramData, callback) => {
   });
 };
 
+exports.isPinned = (paramID, paramData, callback) => {
+  noteModel.isPinned(paramID, paramData, (err, result) => {
+      if (err) {
+          console.log("service error");
+          callback(err);
+      } else {
+          return callback(null, result)
+      }
+  })
+}
+
 exports.isArchived = (paramID, paramData, callback) => {
   console.log("in services ARCHIVE---->", paramID, paramData);
   noteModel.isArchived(paramID, paramData, (err, result) => {
@@ -167,6 +178,7 @@ exports.getLabels = (labelData, callback) => {
       console.log("service error");
       callback(err);
     } else {
+      console.log("response result in NOTE Services---->",result);
       return callback(null, result);
     }
   });
@@ -184,6 +196,8 @@ exports.deleteLabel = (labelData, callback) => {
 };
 
 exports.updateLabel = (labelData, callback) => {
+  console.log("labelData",labelData);
+  
   noteModel.updateLabel(labelData, (err, result) => {
     if (err) {
       console.log("service error");
@@ -224,4 +238,39 @@ exports.checkReminders=()=>{
     }
   })
 
+}
+
+
+exports.saveLabelToNote = (paramData, callback) => {
+  if (paramData.pull) {
+      noteModel.deleteLabelToNote(paramData, (err, result) => {
+          if (err) {
+              console.log("service error");
+              callback(err);
+          } else {
+              return callback(null, result)
+          }
+      })
+  }
+  else {
+      noteModel.saveLabelToNote(paramData, (err, result) => {
+          if (err) {
+              console.log("service error");
+              callback(err);
+          } else {
+              return callback(null, result)
+          }
+      })
+  }
+}
+
+exports.deleteLabelToNote = (paramData, callback) => {
+  noteModel.deleteLabelToNote(paramData, (err, result) => {
+      if (err) {
+          console.log("service error");
+          callback(err);
+      } else {
+          return callback(null, result)
+      }
+  })
 }

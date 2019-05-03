@@ -33,6 +33,7 @@ notificationModel.prototype.notification = (req, callback) => {
     { upsert: true, new: true },
     (err, result) => {
       if (err) {
+        console.log("no reminder1");       
         callback(err);
       } else {
         return callback(null, result);
@@ -48,6 +49,7 @@ notificationModel.prototype.sendNotification = (user_id, callback) => {
     },
     (err, result) => {
       if (err) {
+        console.log("no reminder");        
         callback(err);
       } else {
         return callback(null, result.pushToken);

@@ -25,12 +25,21 @@ var noteSchema = new mongoose.Schema(
     reminder: {
       type: String
     },
+    pinned: {
+      type: Boolean
+    },
     archive: {
       type: Boolean
     },
     trash: {
       type: Boolean
-    }
+    },
+    label: [
+      {
+        type: String,
+        ref: labelSchema
+      }
+    ]
   },
   {
     timestamps: true
@@ -38,7 +47,7 @@ var noteSchema = new mongoose.Schema(
 );
 var note = mongoose.model("Note", noteSchema);
 
-function noteModel() {}
+function noteModel() { }
 /**
  * @description:it will add the notes data using note schema and save the data into the database
  * @param {*request from frontend} objectNote
@@ -119,6 +128,25 @@ noteModel.prototype.reminder = (noteID, reminderParams, callback) => {
       }
     }
   );
+};
+
+noteModel.prototype.isPinned = (noteID, pinParams, callback) => {
+  note.findOneAndUpdate({
+    _id: noteID
+  }, {
+      $set: {
+        pinned: pinParams,
+        trash: false,
+        archive: false
+      }
+    },
+    (err, result) => {
+      if (err) {
+        callback(err)
+      } else {
+        return callback(null, pinParams)
+      }
+    });
 };
 
 noteModel.prototype.isArchived = (noteID, archiveNote, callback) => {
@@ -264,7 +292,6 @@ noteModel.prototype.getLabels = (id, callback) => {
     if (err) {
       callback(err);
     } else {
-      console.log("labels", result);
       return callback(null, result);
     }
   });
@@ -313,15 +340,54 @@ noteModel.prototype.updateLabel = (changedLabel, callback) => {
   );
 };
 
+noteModel.prototype.saveLabelToNote = (labelParams, callback) => {
+  console.log("in model", labelParams.noteID);
+  var labelledNote = null;
+  var noteID = null;
+  if (labelParams != null) {
+    labelledNote = labelParams.label;
+    noteID = labelParams.noteID;
+  } else {
+    callback("Pinned note not found")
+  }
+  note.findOneAndUpdate(
+    {
+      _id: noteID
+    },
+    {
+      $push: {
+        label: labelledNote,
+      }
+    },
+    (err, result) => {
+      if (err) {
+        callback(err)
+      } else {
+        console.log("in model success");
+        let res = result.label;
+        res.push(labelledNote);
+        return callback(null, res)
+      }
+    });
+};
+
 noteModel.prototype.getReminders = (date1, date2, callback) => {
   note.find((err, result) => {
     if (err) {
       callback(err);
     } else {
       const data = [];
-      result.forEach(function(value) {
+      result.forEach(function (value) {
         if (value.reminder.length > 1) {
+          // console.log("Reminders===>",value.reminder);
+          // console.log("date1==",date1);
+          // console.log("date2==",date2);
+
+
+
           if (value.reminder >= date1 && value.reminder <= date2) {
+            console.log("Current Reminders===>", value.reminder);
+
             userIdReminder = [
               value.userId + ", " + value.title + ", " + value.description
             ];
@@ -333,10 +399,46 @@ noteModel.prototype.getReminders = (date1, date2, callback) => {
         callback(null, data);
       } else {
         // console.log("No reminders found");
-        callback(null, "No reminders found");  
+        callback(null, "No reminders found");
       }
     }
   });
 };
 
+
+noteModel.prototype.deleteLabelToNote = (labelParams, callback) => {
+  console.log("in model", labelParams.noteID);
+  var labelledNote = null;
+  var noteID = null;
+  if (labelParams != null) {
+    labelledNote = labelParams.label;
+    noteID = labelParams.noteID;
+  } else {
+    callback("Pinned note not found")
+  }
+  note.findOneAndUpdate(
+    {
+      _id: noteID
+    },
+    {
+      $pull: {
+        label: labelledNote,
+      }
+    },
+    (err, result) => {
+      if (err) {
+        callback(err)
+      } else {
+        let newArray = result.label;
+        console.log("in model success result", result);
+
+        for (let i = 0; i < newArray.length; i++) {
+          if (newArray[i] === labelledNote) {
+            newArray.splice(i, 1);
+            return callback(null, newArray)
+          }
+        }
+      }
+    });
+};
 module.exports = new noteModel();
