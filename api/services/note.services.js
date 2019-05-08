@@ -31,11 +31,12 @@ exports.getNotes = (data, callback) => {
       console.log("service error---->note<GET NOTE>");
       callback(err);
     } else {
-      // console.log("In service", result);
+     //  console.log("In service", result);
       callback(null, result);
     }
   });
 };
+
 
 exports.updateColor = (paramID, paramData, callback) => {
   // console.log("in services", paramID, paramData);
@@ -178,7 +179,7 @@ exports.getLabels = (labelData, callback) => {
       console.log("service error");
       callback(err);
     } else {
-      console.log("response result in NOTE Services---->",result);
+     // console.log("response result in NOTE Services---->",result);
       return callback(null, result);
     }
   });
