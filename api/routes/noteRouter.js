@@ -21,4 +21,7 @@ router.post('/deleteLabel',middle.checkTokenAuth,noteController.deleteLabel);
 router.put('/updateLabel',middle.checkTokenAuth,noteController.updateLabel);
 router.post('/saveLabelToNote', middle.checkTokenAuth, noteController.saveLabelToNote);
 router.post('/deleteLabelToNote', middle.checkTokenAuth, noteController.deleteLabelToNote);
+
+// router.post('/saveCollaborator', middle.checkTokenAuth, collaboratorController.saveCollaborator);
+// router.get('/getCollaboratorDetails', middle.checkTokenAuth, collaboratorController.getCollaboratorDetails);
 module.exports = router;

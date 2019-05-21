@@ -448,4 +448,81 @@ noteModel.prototype.deleteLabelToNote = (labelParams, callback) => {
       }
     });
 };
+
+
+
+const collabSchema = mongoose.Schema({
+    userID: {
+        type: Schema.Types.ObjectId,
+        ref: "UserSchema"
+    },
+    noteID: {
+        type: Schema.Types.ObjectId,
+        ref: "Note"
+    },
+    collabUserID: {
+        type: Schema.Types.ObjectId,
+        ref: "UserSchema"
+    },
+},
+    {
+        timestamps: true
+    })
+const Collab = mongoose.model('Collaborator', collabSchema);
+/**
+ * 
+ * @param {*} collabData 
+ * @param {*} callback 
+ */
+noteModel.prototype.saveCollaborator = (collabData, callback) => {
+    console.log("ultimate save", collabData);
+    const Data = new Collab(collabData);
+    Data.save((err, result) => {
+        if (err) {
+            console.log(err);
+            callback(err);
+        } else {
+            return callback(null, result);
+        }
+    })
+}
+
+noteModel.prototype.getDataByNoteId = (noteID, callback) => {
+    Collab.find({ noteID: noteID })
+        .populate('userID', { notes: 0, password: 0, __v: 0, resetPasswordExpires: 0, resetPasswordToken: 0 })
+        .populate('collabUserID', { notes: 0, password: 0, __v: 0, resetPasswordExpires: 0, resetPasswordToken: 0 })
+        .populate('noteID')
+        .exec(function (err, result) {
+            if (err) {
+                callback(err);
+            } else {
+                callback(null, result);
+            }
+        })
+}
+
+noteModel.prototype.getCollabNotesUserId = (userID, callback) => {
+    console.log("--------------------------",userID);
+    Collab.find({ collabUserID: userID }, (err, result) => {
+        if (err) {
+            callback(err);
+        } else {
+            callback(null, result);
+        }
+    })
+}
+
+noteModel.prototype.getCollabOwnerUserId = (ownerUserId, callback) => {
+    Collab.find({ userID: ownerUserId })
+        .populate('collabUserID', { notes: 0, password: 0, __v: 0, resetPasswordExpires: 0, resetPasswordToken: 0 })
+        .exec(function (err, result) {
+            if (err) {
+                callback(err);
+            } else {
+                callback(null, result);
+            }
+        })
+}
+
+
 module.exports = new noteModel();

@@ -73,17 +73,33 @@ exports.isPinned = (paramID, paramData, callback) => {
   })
 }
 
-exports.isArchived = (paramID, paramData, callback) => {
-  console.log("in services ARCHIVE---->", paramID, paramData);
-  noteModel.isArchived(paramID, paramData, (err, result) => {
-    if (err) {
-      console.log("service error");
-      callback(err);
-    } else {
-      return callback(null, result);
-    }
-  });
+// exports.isArchived = (paramID, paramData, callback) => {
+//   console.log("in services ARCHIVE---->", paramID, paramData);
+//   noteModel.isArchived(paramID, paramData, (err, result) => {
+//     if (err) {
+//       console.log("service error");
+//       callback(err);
+//     } else {
+//       return callback(null, result);
+//     }
+//   });
+// };
+
+
+exports.isArchived = (paramID, paramData) => {
+  return new Promise((resolve, reject) => {
+    noteModel.isArchived(paramID, paramData, (err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    });
+  })
 };
+
+
+
 
 exports.isTrashed = (paramID, paramData, callback) => {
   console.log("in services Trash---->", paramID, paramData);
@@ -274,4 +290,47 @@ exports.deleteLabelToNote = (paramData, callback) => {
           return callback(null, result)
       }
   })
+}
+
+
+
+exports.saveCollaborator = (collabData, callback) => {
+    collaboratorModel.saveCollaborator(collabData, (err, result) => {
+        if (err) {
+            console.log("service error");
+            callback(err);
+        } else {
+            return callback(null, result)
+        }
+    })
+}
+/**
+ * 
+ * @param {*} userId 
+ * @param {*} callback 
+ */
+exports.getCollabNotesUserId = (userId, callback) => {
+    collaboratorModel.getCollabNotesUserId(userId, (err, result) => {
+        if (err) {
+            console.log("service error");
+            callback(err);
+        } else {
+            callback(null, result);
+        }
+    })
+}
+/**
+ * 
+ * @param {*} callback 
+ */
+exports.getCollaboratorDetails = (callback) => {
+    console.log("get collab details::");
+    userModel.getUserDetails((err, result) => {
+        if (err) {
+            console.log("service error");
+            callback(err);
+        } else {
+            callback(null, result);
+        }
+    })
 }

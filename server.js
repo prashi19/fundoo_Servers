@@ -18,7 +18,11 @@ app.use(bodyParser.json());
 var expressValidator = require('express-validator')
 app.use(expressValidator());
 // Configuring the database
-const databaseConfig = require("./configuration/database.configuration");
+// const databaseConfig = require("./configuration/database.configuration");
+
+
+var env = process.env.NODE_ENV || 'local';
+var databaseConfig = require('./config/' +env);
 
 // Import Mongoose
 const mongoose = require("mongoose");
@@ -26,7 +30,7 @@ mongoose.Promise = global.Promise;
 require ('dotenv').config();
 // Connecting to the database
 mongoose
-  .connect(databaseConfig.url, {
+  .connect(databaseConfig.config.url, {
     useNewUrlParser: true
   })
   .then(() => {

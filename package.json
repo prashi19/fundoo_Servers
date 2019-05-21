@@ -6,7 +6,8 @@
   "scripts": {
     "test": "./node_modules/.bin/mocha --reporter spec",
     "start": "nodemon server.js",
-    "dev": "nodemon server.js"
+    "dev": "export  NODE_ENV=development && node server.js",
+    "prod": "export  NODE_ENV=production && node server.js"
   },
   "author": "Prashanth",
   "license": "ISC",

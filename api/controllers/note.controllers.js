@@ -251,17 +251,19 @@ exports.isArchived = (req, res) => {
       archive = req.body.archive;
       const userId = req.decoded.payload.user_id;
       redis.onDelete(userId);
-      noteService.isArchived(noteID, archive, (err, result) => {
-        if (err) {
-          responseResult.status = false;
-          responseResult.error = err;
-          res.status(500).send(responseResult);
-        } else {
+      noteService.isArchived(noteID, archive)
+        .then(result => {
           responseResult.status = true;
           responseResult.data = result;
           res.status(200).send(responseResult);
-        }
-      });
+        })
+        .catch(err => {
+          responseResult.status = false;
+          responseResult.error = err;
+          res.status(500).send(responseResult);
+
+        })
+
     }
   } catch (error) {
     res.send(error);
@@ -683,4 +685,76 @@ exports.deleteLabelToNote = (req, res) => {
   } catch (error) {
     res.send(error)
   }
+}
+
+
+
+
+
+exports.saveCollaborator = (req, res) => {
+    try {
+        req.checkBody('userID', 'userID required').not().isEmpty();
+        req.checkBody('noteID', 'noteID required').not().isEmpty();
+        req.checkBody('collabUserID', 'collabUserID required').not().isEmpty();
+        var errors = req.validationErrors();
+        var response = {};
+        if (errors) {
+            response.status = false;
+            response.error = errors;
+            return res.status(422).send(response);
+        } else {
+            var responseResult = {};
+            const collabData = {
+                userID: req.decoded.payload.user_id,
+                noteID: req.body.noteID,
+                collabUserID: req.body.collabID
+            }
+            collaboratorService.saveCollaborator(collabData, (err, result) => {
+                if (err) {
+                    responseResult.status = false;
+                    responseResult.error = err;
+                    res.status(500).send(responseResult);
+                }
+                else {
+                    responseResult.status = true;
+                    responseResult.data = result;
+                    const url = `you have been successfully collabed with one fundooNotes user`;
+                    sent.sendEMailFunctionForCollaborator(url);
+                    res.status(200).send(url);
+                    //res.status(200).send(responseResult);
+                }
+            })
+        }
+    }
+    catch (error) {
+        res.send(error)
+    }
+}
+/**
+ * @description:It handles get the collaborator details
+ * @param {*request from frontend} req 
+ * @param {*response from backend} res 
+ */
+exports.getCollaboratorDetails = (req, res) => {
+    try {
+        var responseResult = {};
+        // console.log("in collab noteController", req.body);
+        collaboratorService.getCollaboratorDetails((err, result) => {
+            console.log(err);
+            console.log(result);
+            if (err) {
+                responseResult.status = false;
+                responseResult.error = err;
+                res.status(500).send(responseResult);
+            }
+            else {
+                responseResult.status = true;
+                responseResult.data = result;
+                res.status(200).send(responseResult);
+            }
+        })
+    }
+    catch (error) {
+        res.send(error)
+    }
 }
